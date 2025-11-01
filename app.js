@@ -15,8 +15,8 @@ const API_URL = process.env.API_URL || 'https://sublink.eooce.com'; // 订阅转
 const PORT = process.env.SERVER_PORT || process.env.PORT || 3000;
 const SUB_TOKEN = process.env.SUB_TOKEN || generateRandomString();
 
-let CFIP = process.env.CFIP || "time.is";
-let CFPORT = process.env.CFPORT || "443";
+let CFIP = process.env.CFIP;
+let CFPORT = process.env.CFPORT;
 let subscriptions = [];
 let nodes = '';
 
@@ -932,3 +932,4 @@ async function startServer() {
 }
 
 startServer();
+
