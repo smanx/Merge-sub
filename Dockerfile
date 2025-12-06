@@ -6,9 +6,11 @@ COPY . .
 
 EXPOSE 3000
 
-RUN apk update && apk add --no-cache openssl curl wget &&\
+RUN set -e; \
+    apk update && apk add --no-cache --no-scripts openssl curl wget &&\
     rm -rf workers install.sh &&\
     chmod +x app.js &&\
     npm install
 
 CMD ["node", "app.js"]
+
