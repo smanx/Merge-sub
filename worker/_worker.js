@@ -329,6 +329,15 @@ export default {
 
         // 静态文件服务 (仅支持简单的 HTML 文件)
         if (url.pathname === '/' || url.pathname === '/index.html') {
+            // 添加身份验证
+            const isAuthenticated = await verifyAuth(request, env);
+            if (!isAuthenticated) {
+                return new Response('认证失败', { 
+                    status: 401,
+                    headers: { 'WWW-Authenticate': 'Basic realm="Node"' }
+                });
+            }
+
             const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -553,11 +562,16 @@ export default {
                 lines.push('<div style="margin-bottom: 10px;"><strong>clash订阅(FIclash/Mihomo/ClashMeta)：</strong><br><input type="text" value="' + apiUrl + '/clash?config=' + currentDomain + '/' + subToken + '" style="width: 100%; padding: 5px; margin-top: 5px;" readonly onclick="this.select()"></div>');
                 lines.push('<div style="margin-bottom: 10px;"><strong>sing-box订阅：</strong><br><input type="text" value="' + apiUrl + '/singbox?config=' + currentDomain + '/' + subToken + '" style="width: 100%; padding: 5px; margin-top: 5px;" readonly onclick="this.select()"></div>');
                 lines.push('<div style="margin-top: 15px; font-size: 12px; color: #666;">提醒：将time.is和443改为更快的优选ip或优选域名和对应的端口。</div>');
-                lines.push('<button onclick="this.closest(\\'div[style*="position: fixed"]\\').remove()" style="margin-top: 15px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">关闭</button>');
+                lines.push('<button id="closeOverlayBtn" style="margin-top: 15px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">关闭</button>');
                 
                 alertBox.innerHTML = lines.join('');
                 overlay.appendChild(alertBox);
                 document.body.appendChild(overlay);
+                
+                // 绑定关闭按钮事件
+                document.getElementById('closeOverlayBtn').onclick = function() {
+                    overlay.remove();
+                };
                 
                 overlay.onclick = function(e) {
                     if (e.target === overlay) {
