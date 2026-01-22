@@ -348,11 +348,11 @@ export default {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
         h1 { color: #333; margin-bottom: 20px; }
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .container { display: grid; grid-template-columns: 1fr; gap: 20px; }
         .section { background: #f5f5f5; padding: 20px; border-radius: 8px; }
         h2 { color: #555; margin-bottom: 15px; }
         textarea { width: 100%; height: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; margin-right: 10px; }
         button:hover { background: #0056b3; }
         button.delete-btn { background: #dc3545; }
         button.delete-btn:hover { background: #c82333; }
@@ -374,17 +374,10 @@ export default {
     <div id="content">
         <div class="container">
             <div class="section">
-                <h2>添加订阅或节点</h2>
-                <textarea id="addInput" placeholder="每行一个订阅链接或节点（支持 base64）"></textarea>
+                <h2>管理订阅或节点</h2>
+                <textarea id="input" placeholder="每行一个订阅链接或节点（支持 base64）"></textarea>
                 <div>
                     <button onclick="addItem()">添加</button>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>删除订阅或节点</h2>
-                <textarea id="deleteInput" placeholder="每行一个要删除的订阅链接或节点"></textarea>
-                <div>
                     <button onclick="deleteItem()" class="delete-btn">删除</button>
                 </div>
             </div>
@@ -470,7 +463,7 @@ export default {
         }
         
         async function addItem() {
-            const input = document.getElementById('addInput').value.trim();
+            const input = document.getElementById('input').value.trim();
             if (!input) {
                 alert('请输入订阅链接或节点');
                 return;
@@ -490,7 +483,7 @@ export default {
                 });
                 const result = await response.json();
                 alert(result.message || result.error);
-                document.getElementById('addInput').value = '';
+                document.getElementById('input').value = '';
                 loadData();
             } catch (error) {
                 if (error.message !== '需要认证') {
@@ -500,7 +493,7 @@ export default {
         }
         
         async function deleteItem() {
-            const input = document.getElementById('deleteInput').value.trim();
+            const input = document.getElementById('input').value.trim();
             if (!input) {
                 alert('请输入要删除的订阅链接或节点');
                 return;
@@ -520,7 +513,7 @@ export default {
                 });
                 const result = await response.json();
                 alert(result.message || result.error);
-                document.getElementById('deleteInput').value = '';
+                document.getElementById('input').value = '';
                 loadData();
             } catch (error) {
                 if (error.message !== '需要认证') {
