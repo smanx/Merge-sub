@@ -339,59 +339,340 @@ export default {
             }
 
             const html = `<!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Merge Subscription</title>
     <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --radius: 0.5rem;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
-        h1 { color: #333; margin-bottom: 20px; }
-        .container { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .section { background: #f5f5f5; padding: 20px; border-radius: 8px; }
-        h2 { color: #555; margin-bottom: 15px; }
-        textarea { width: 100%; height: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; margin-right: 10px; }
-        button:hover { background: #0056b3; }
-        button.delete-btn { background: #dc3545; }
-        button.delete-btn:hover { background: #c82333; }
-        .data-display { margin-top: 20px; }
-        .data-display pre { background: #fff; padding: 15px; border-radius: 4px; overflow-x: auto; }
-        .auth-input { padding: 8px; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+        
+        body { 
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 1.5rem;
+        }
+
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            display: grid; 
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 1.5rem; 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            min-width: 0;
+            overflow-wrap: break-word;
+        }
+
+        h2 { 
+            font-size: 1.25rem; 
+            font-weight: 600; 
+            color: var(--text-color); 
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 1.25rem;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        textarea { 
+            width: 100%; 
+            height: 120px; 
+            padding: 0.75rem; 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius); 
+            resize: vertical; 
+            font-family: monospace;
+            font-size: 0.875rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f9fafb;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background-color: #fff;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button { 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem; 
+            background: var(--primary-color); 
+            color: white; 
+            border: none; 
+            border-radius: var(--radius); 
+            cursor: pointer; 
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            min-width: 80px;
+        }
+
+        button:hover { 
+            background: var(--primary-hover); 
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.delete-btn { 
+            background: var(--danger-color); 
+        }
+
+        button.delete-btn:hover { 
+            background: var(--danger-hover); 
+        }
+
+        button.secondary-btn {
+            background: white;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        button.secondary-btn:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .data-display pre { 
+            background: #f8fafc; 
+            padding: 1rem; 
+            border-radius: var(--radius); 
+            font-size: 0.8125rem;
+            border: 1px solid var(--border-color);
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .auth-form {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            max-width: 400px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .auth-input { 
+            width: 100%;
+            padding: 0.75rem; 
+            margin-bottom: 1rem; 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius); 
+            font-size: 0.875rem;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-item {
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-item label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-size: 0.875rem;
+        }
+
+        .copy-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .copy-input-group input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: #f9fafb;
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+        }
+
+        .tip {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #eff6ff;
+            border-radius: var(--radius);
+            color: #1e40af;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+            .container { gap: 1rem; }
+            .button-group { flex-direction: column; }
+            button { width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <h1>Merge Subscription - Cloudflare Worker</h1>
-    
-    <div id="authPrompt" style="margin-bottom: 20px; display: none;">
-        <input type="text" id="authUsername" class="auth-input" placeholder="用户名">
-        <input type="password" id="authPassword" class="auth-input" placeholder="密码">
-        <button onclick="saveAuth()">确认</button>
+    <div id="authOverlay" class="overlay" style="z-index: 2000;">
+        <div class="auth-form">
+            <h2 style="justify-content: center; margin-bottom: 1.5rem;">身份验证</h2>
+            <input type="text" id="authUsername" class="auth-input" placeholder="请输入用户名">
+            <input type="password" id="authPassword" class="auth-input" placeholder="请输入密码">
+            <button onclick="saveAuth()" style="width: 100%;">确认登录</button>
+        </div>
     </div>
     
     <div id="content">
+        <div class="header">
+            <h1>Merge Subscription</h1>
+            <p>Cloudflare Worker 订阅转换与节点合并工具</p>
+        </div>
+
         <div class="container">
-            <div class="section">
+            <div class="card">
                 <h2>管理订阅或节点</h2>
-                <textarea id="input" placeholder="每行一个订阅链接或节点（支持 base64）"></textarea>
-                <div>
-                    <button onclick="addItem()">添加</button>
-                    <button onclick="deleteItem()" class="delete-btn">删除</button>
+                <textarea id="input" placeholder="在此输入订阅链接或节点信息（每行一个，支持 base64）..."></textarea>
+                <div class="button-group">
+                    <button onclick="addItem()">
+                        <svg style="width: 16px; height: 16px; margin-right: 6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        添加
+                    </button>
+                    <button onclick="deleteItem()" class="delete-btn">
+                        <svg style="width: 16px; height: 16px; margin-right: 6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        删除
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 style="margin-bottom: 0;">当前数据概览</h2>
+                    <div style="display: flex; gap: 0.5rem;">
+                         <button onclick="showSubscriptionInfo()" class="secondary-btn">
+                            <svg style="width: 16px; height: 16px; margin-right: 6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                            获取链接
+                        </button>
+                        <button onclick="loadData()" class="secondary-btn">
+                            <svg style="width: 16px; height: 16px; margin-right: 6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            刷新
+                        </button>
+                    </div>
+                </div>
+                <div class="data-display">
+                    <pre id="dataDisplay">正在加载数据...</pre>
                 </div>
             </div>
         </div>
-        
-        <div class="section data-display">
-            <h2>当前数据</h2>
-            <button onclick="loadData()">刷新数据</button>
-            <pre id="dataDisplay"></pre>
-        </div>
-        
-        <div class="section">
-            <h2>订阅链接</h2>
-            <button onclick="showSubscriptionInfo()">查看订阅链接</button>
+    </div>
+
+    <!-- 订阅信息模态框 -->
+    <div id="subOverlay" class="overlay">
+        <div class="modal">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600;">订阅链接配置</h3>
+                <button id="closeOverlayBtn" style="background: none; border: none; padding: 0.25rem; min-width: auto; color: var(--text-secondary); cursor: pointer;">
+                    <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="modalContent"></div>
         </div>
     </div>
 
@@ -402,10 +683,8 @@ export default {
             return 'Basic ' + authCredentials;
         }
         
-        // 统一的带认证的 fetch 函数
         async function fetchWithAuth(url, options = {}) {
             const headers = options.headers || {};
-            // 只有当有凭证时才添加 Authorization header
             if (authCredentials) {
                 headers['Authorization'] = getAuthHeader();
             }
@@ -413,9 +692,8 @@ export default {
             
             const response = await fetch(url, options);
             
-            // 如果返回 401，显示认证提示框
             if (response.status === 401) {
-                document.getElementById('authPrompt').style.display = 'block';
+                document.getElementById('authOverlay').classList.add('active');
                 throw new Error('需要认证');
             }
             
@@ -427,43 +705,44 @@ export default {
             const password = document.getElementById('authPassword').value;
             if (username && password) {
                 authCredentials = btoa(username + ':' + password);
-                document.getElementById('authPrompt').style.display = 'none';
+                document.getElementById('authOverlay').classList.remove('active');
                 loadData();
             }
         }
         
         async function loadData() {
+            const display = document.getElementById('dataDisplay');
             try {
                 const response = await fetchWithAuth('/admin/data');
                 
                 if (!response.ok) {
-                    alert('认证失败');
-                    document.getElementById('authPrompt').style.display = 'block';
+                    if (response.status !== 401) {
+                        display.textContent = '加载失败: ' + response.statusText;
+                    }
                     return;
                 }
                 
                 const data = await response.json();
-                document.getElementById('dataDisplay').textContent = JSON.stringify(data, null, 2);
+                display.textContent = JSON.stringify(data, null, 2);
             } catch (error) {
                 if (error.message !== '需要认证') {
                     console.error('加载数据失败:', error);
+                    display.textContent = '加载发生错误: ' + error.message;
                 }
             }
         }
         
-        // 页面加载时尝试加载数据，自动触发认证
         window.addEventListener('load', loadData);
         
-        // 判断是订阅还是节点
         function isSubscription(input) {
             const lines = input.split('\\n').map(line => line.trim()).filter(line => line);
             if (lines.length === 0) return false;
-            // 如果所有行都是 URL，则认为是订阅
             return lines.every(line => line.startsWith('http://') || line.startsWith('https://'));
         }
         
         async function addItem() {
-            const input = document.getElementById('input').value.trim();
+            const inputEl = document.getElementById('input');
+            const input = inputEl.value.trim();
             if (!input) {
                 alert('请输入订阅链接或节点');
                 return;
@@ -476,15 +755,15 @@ export default {
             try {
                 const response = await fetchWithAuth(endpoint, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
                 const result = await response.json();
                 alert(result.message || result.error);
-                document.getElementById('input').value = '';
-                loadData();
+                if (response.ok) {
+                    inputEl.value = '';
+                    loadData();
+                }
             } catch (error) {
                 if (error.message !== '需要认证') {
                     alert('添加失败: ' + error.message);
@@ -493,7 +772,8 @@ export default {
         }
         
         async function deleteItem() {
-            const input = document.getElementById('input').value.trim();
+            const inputEl = document.getElementById('input');
+            const input = inputEl.value.trim();
             if (!input) {
                 alert('请输入要删除的订阅链接或节点');
                 return;
@@ -506,15 +786,15 @@ export default {
             try {
                 const response = await fetchWithAuth(endpoint, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
                 const result = await response.json();
                 alert(result.message || result.error);
-                document.getElementById('input').value = '';
-                loadData();
+                if (response.ok) {
+                    inputEl.value = '';
+                    loadData();
+                }
             } catch (error) {
                 if (error.message !== '需要认证') {
                     alert('删除失败: ' + error.message);
@@ -542,35 +822,44 @@ export default {
                 
                 const currentDomain = window.location.origin;
                 
-                const overlay = document.createElement('div');
-                overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;';
+                const overlay = document.getElementById('subOverlay');
+                const content = document.getElementById('modalContent');
                 
-                const alertBox = document.createElement('div');
-                alertBox.style.cssText = 'background: white; padding: 20px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;';
+                const links = [
+                    { label: '默认订阅链接 (base64)', value: \`\${currentDomain}/\${subToken}\` },
+                    { label: '带优选IP订阅链接 (base64)', value: \`\${currentDomain}/\${subToken}?CFIP=time.is&CFPORT=443\` },
+                    { label: 'Clash 订阅 (FIclash/Mihomo/ClashMeta)', value: \`\${apiUrl}/clash?config=\${currentDomain}/\${subToken}\` },
+                    { label: 'Sing-box 订阅', value: \`\${apiUrl}/singbox?config=\${currentDomain}/\${subToken}\` }
+                ];
+
+                let html = '';
+                links.forEach(link => {
+                    html += \`
+                        <div class="modal-item">
+                            <label>\${link.label}</label>
+                            <div class="copy-input-group">
+                                <input type="text" value="\${link.value}" readonly onclick="this.select()">
+                            </div>
+                        </div>
+                    \`;
+                });
                 
-                const lines = [];
-                lines.push('<h3 style="margin-bottom: 15px;">订阅链接</h3>');
-                lines.push('<div style="margin-bottom: 10px;"><strong>默认订阅链接(base64)：</strong><br><input type="text" value="' + currentDomain + '/' + subToken + '" style="width: 100%; padding: 5px; margin-top: 5px;" readonly onclick="this.select()"></div>');
-                lines.push('<div style="margin-bottom: 10px;"><strong>带优选IP订阅链接(base64)：</strong><br><input type="text" value="' + currentDomain + '/' + subToken + '?CFIP=time.is&CFPORT=443" style="width: 100%; padding: 5px; margin-top: 5px;" readonly onclick="this.select()"></div>');
-                lines.push('<div style="margin-bottom: 10px;"><strong>clash订阅(FIclash/Mihomo/ClashMeta)：</strong><br><input type="text" value="' + apiUrl + '/clash?config=' + currentDomain + '/' + subToken + '" style="width: 100%; padding: 5px; margin-top: 5px;" readonly onclick="this.select()"></div>');
-                lines.push('<div style="margin-bottom: 10px;"><strong>sing-box订阅：</strong><br><input type="text" value="' + apiUrl + '/singbox?config=' + currentDomain + '/' + subToken + '" style="width: 100%; padding: 5px; margin-top: 5px;" readonly onclick="this.select()"></div>');
-                lines.push('<div style="margin-top: 15px; font-size: 12px; color: #666;">提醒：将time.is和443改为更快的优选ip或优选域名和对应的端口。</div>');
-                lines.push('<button id="closeOverlayBtn" style="margin-top: 15px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">关闭</button>');
+                html += \`<div class="tip">💡 小提示：将链接中的 time.is 和 443 改为更快的优选 IP/域名和对应端口。</div>\`;
                 
-                alertBox.innerHTML = lines.join('');
-                overlay.appendChild(alertBox);
-                document.body.appendChild(overlay);
+                content.innerHTML = html;
+                overlay.classList.add('active');
                 
-                // 绑定关闭按钮事件
-                document.getElementById('closeOverlayBtn').onclick = function() {
-                    overlay.remove();
+                // 绑定关闭事件
+                const closeBtn = document.getElementById('closeOverlayBtn');
+                const closeHandler = () => {
+                    overlay.classList.remove('active');
                 };
                 
-                overlay.onclick = function(e) {
-                    if (e.target === overlay) {
-                        overlay.remove();
-                    }
+                closeBtn.onclick = closeHandler;
+                overlay.onclick = (e) => {
+                    if (e.target === overlay) closeHandler();
                 };
+                
             } catch (error) {
                 console.error('Error:', error);
                 alert('获取订阅信息失败');
