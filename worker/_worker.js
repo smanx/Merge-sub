@@ -31,6 +31,41 @@ function generateRandomString() {
 // 固定的默认 SUB_TOKEN，用于没有配置环境变量和 KV 的情况
 const DEFAULT_SUB_TOKEN = 'merge-sub-default-token';
 
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+function normalizeBase64(base64) {
+    return base64.replace(/-/g, '+').replace(/_/g, '/').replace(/\s+/g, '');
+}
+
+function decodeBase64ToBytes(base64) {
+    const normalized = normalizeBase64(base64);
+    const padding = normalized.length % 4;
+    const padded = padding === 0 ? normalized : normalized + '='.repeat(4 - padding);
+    const binary = atob(padded);
+    return Uint8Array.from(binary, char => char.charCodeAt(0));
+}
+
+function encodeBytesToBase64(bytes) {
+    let binary = '';
+    const chunkSize = 0x8000;
+
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        binary += String.fromCharCode(...chunk);
+    }
+
+    return btoa(binary);
+}
+
+function decodeBase64Utf8(base64) {
+    return textDecoder.decode(decodeBase64ToBytes(base64));
+}
+
+function encodeBase64Utf8(content) {
+    return encodeBytesToBase64(textEncoder.encode(content));
+}
+
 // 解析 Basic Auth
 function parseBasicAuth(authHeader) {
     if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -131,7 +166,7 @@ function tryDecodeBase64(str) {
     const base64Regex = /^[A-Za-z0-9+/=]+$/;
     try {
         if (base64Regex.test(str)) {
-            const decoded = atob(str);
+            const decoded = decodeBase64Utf8(str);
             if (decoded.startsWith('vmess://') || 
                 decoded.startsWith('vless://') || 
                 decoded.startsWith('trojan://') ||
@@ -187,7 +222,7 @@ async function fetchSubscriptionContent(subscription) {
 // 解码 base64 内容
 function decodeBase64Content(base64Content) {
     try {
-        return atob(base64Content);
+        return decodeBase64Utf8(base64Content);
     } catch (error) {
         return base64Content;
     }
@@ -206,7 +241,7 @@ function replaceAddressAndPort(content, CFIP, CFPORT) {
         if (line.startsWith('vmess://')) {
             try {
                 const base64Part = line.substring(8);
-                const decoded = atob(base64Part);
+                const decoded = decodeBase64Utf8(base64Part);
                 const nodeObj = JSON.parse(decoded);
 
                 if ((nodeObj.net === 'ws' || nodeObj.net === 'xhttp') && nodeObj.tls === 'tls') {
@@ -214,7 +249,7 @@ function replaceAddressAndPort(content, CFIP, CFPORT) {
                         nodeObj.add = CFIP;
                         nodeObj.port = parseInt(CFPORT, 10);
                     }
-                    return 'vmess://' + btoa(JSON.stringify(nodeObj));
+                    return 'vmess://' + encodeBase64Utf8(JSON.stringify(nodeObj));
                 }
             } catch (error) {
                 console.error('Error processing VMess node:', error);
@@ -899,7 +934,7 @@ export default {
                     finalCFIP,
                     finalCFPORT
                 );
-                const base64Content = btoa(mergedSubscription);
+                const base64Content = encodeBase64Utf8(mergedSubscription);
                 return new Response(base64Content, {
                     headers: { 'Content-Type': 'text/plain; charset=utf-8' }
                 });
